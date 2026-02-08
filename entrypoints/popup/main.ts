@@ -1,2 +1,8 @@
-// Popup entry point - will be implemented in Step 11
-console.log('Protect Cat popup loaded');
+import { App } from './App';
+import './style.css';
+
+const root = document.getElementById('app');
+if (root) {
+  const app = new App(root);
+  app.init();
+}
