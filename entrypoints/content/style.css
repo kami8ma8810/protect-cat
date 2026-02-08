@@ -1,1 +1,253 @@
-/* Content script styles - will be implemented in Step 6 */
+/* Protect Cat - Content Script Styles */
+
+/* Cat container (Shadow DOM root) */
+.protect-cat-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483647;
+  overflow: hidden;
+}
+
+/* Base cat element */
+.protect-cat {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+  pointer-events: none;
+  image-rendering: pixelated;
+  background-repeat: no-repeat;
+}
+
+/* Size variants */
+.cat-small {
+  width: 32px;
+  height: 32px;
+  background-size: auto 32px;
+}
+
+.cat-medium {
+  width: 64px;
+  height: 64px;
+  background-size: auto 64px;
+}
+
+.cat-large {
+  width: 96px;
+  height: 96px;
+  background-size: auto 96px;
+}
+
+/* Sprite animations */
+/* walk: 8 frames */
+.cat-walking {
+  animation: sprite-walk 0.8s steps(8) infinite;
+}
+
+/* idle: 4 frames */
+.cat-idle {
+  animation: sprite-idle 1.6s steps(4) infinite;
+}
+
+/* sitting: 6 frames */
+.cat-sitting {
+  animation: sprite-sit 1.2s steps(6) infinite;
+}
+
+/* sleeping: 4 frames (slow breathing) */
+.cat-sleeping {
+  animation: sprite-sleep 2.4s steps(4) infinite;
+}
+
+/* turning: 2 frames */
+.cat-turning {
+  animation: sprite-turn 0.4s steps(2) infinite;
+}
+
+/* Sprite sheet keyframes for small (32px) */
+@keyframes sprite-walk {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -256px; /* 8 * 32px */
+  }
+}
+
+@keyframes sprite-idle {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -128px; /* 4 * 32px */
+  }
+}
+
+@keyframes sprite-sit {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -192px; /* 6 * 32px */
+  }
+}
+
+@keyframes sprite-sleep {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -128px; /* 4 * 32px */
+  }
+}
+
+@keyframes sprite-turn {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -64px; /* 2 * 32px */
+  }
+}
+
+/* Medium (64px) - override keyframes based on size */
+.cat-medium.cat-walking {
+  animation-name: sprite-walk-md;
+}
+.cat-medium.cat-idle {
+  animation-name: sprite-idle-md;
+}
+.cat-medium.cat-sitting {
+  animation-name: sprite-sit-md;
+}
+.cat-medium.cat-sleeping {
+  animation-name: sprite-sleep-md;
+}
+.cat-medium.cat-turning {
+  animation-name: sprite-turn-md;
+}
+
+@keyframes sprite-walk-md {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -512px; /* 8 * 64px */
+  }
+}
+
+@keyframes sprite-idle-md {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -256px; /* 4 * 64px */
+  }
+}
+
+@keyframes sprite-sit-md {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -384px; /* 6 * 64px */
+  }
+}
+
+@keyframes sprite-sleep-md {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -256px; /* 4 * 64px */
+  }
+}
+
+@keyframes sprite-turn-md {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -128px; /* 2 * 64px */
+  }
+}
+
+/* Large (96px) */
+.cat-large.cat-walking {
+  animation-name: sprite-walk-lg;
+}
+.cat-large.cat-idle {
+  animation-name: sprite-idle-lg;
+}
+.cat-large.cat-sitting {
+  animation-name: sprite-sit-lg;
+}
+.cat-large.cat-sleeping {
+  animation-name: sprite-sleep-lg;
+}
+.cat-large.cat-turning {
+  animation-name: sprite-turn-lg;
+}
+
+@keyframes sprite-walk-lg {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -768px; /* 8 * 96px */
+  }
+}
+
+@keyframes sprite-idle-lg {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -384px; /* 4 * 96px */
+  }
+}
+
+@keyframes sprite-sit-lg {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -576px; /* 6 * 96px */
+  }
+}
+
+@keyframes sprite-sleep-lg {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -384px; /* 4 * 96px */
+  }
+}
+
+@keyframes sprite-turn-lg {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: -192px; /* 2 * 96px */
+  }
+}
+
+/* Breed sprite sheets */
+.cat-tabby {
+  --sprite-base: url('/assets/cats/sprites/tabby');
+}
+.cat-black {
+  --sprite-base: url('/assets/cats/sprites/black');
+}
+.cat-white {
+  --sprite-base: url('/assets/cats/sprites/white');
+}
+.cat-calico {
+  --sprite-base: url('/assets/cats/sprites/calico');
+}
+.cat-orange {
+  --sprite-base: url('/assets/cats/sprites/orange');
+}
