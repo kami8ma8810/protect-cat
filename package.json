@@ -1,0 +1,36 @@
+{
+  "name": "protect-cat",
+  "version": "1.0.0",
+  "description": "SNSの見過ぎを防ぐChrome拡張機能。ピクセルアートの猫が画面に増殖します。",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip",
+    "postinstall": "wxt prepare",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kami8ma8810/protect-cat.git"
+  },
+  "keywords": ["chrome-extension", "sns", "productivity", "pixel-art", "cat"],
+  "author": "kami8ma8810",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kami8ma8810/protect-cat/issues"
+  },
+  "homepage": "https://github.com/kami8ma8810/protect-cat#readme",
+  "dependencies": {
+    "wxt": "^0.20.14"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.36",
+    "@webext-core/fake-browser": "^1.3.4",
+    "jsdom": "^28.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}
