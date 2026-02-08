@@ -21,8 +21,9 @@ const DEFAULT_STORAGE: StorageSchema = {
   lastSavedDate: '',
   settings: {
     enabled: true,
-    spawnIntervalMinutes: 2,
+    spawnIntervalSeconds: 120,
     maxCats: 50,
+    isPremium: false,
   },
   snsTimeSpent: {},
   todayCatCount: 0,

@@ -257,6 +257,28 @@
   --fallback-color: #E8972C;
 }
 
+/* Premium cat breeds */
+.cat-siamese {
+  --sprite-base: url('/assets/cats/sprites/siamese');
+  --fallback-color: #F5E6D3;
+}
+.cat-persian {
+  --sprite-base: url('/assets/cats/sprites/persian');
+  --fallback-color: #D4C4A8;
+}
+.cat-scottish-fold {
+  --sprite-base: url('/assets/cats/sprites/scottish-fold');
+  --fallback-color: #A89070;
+}
+.cat-munchkin {
+  --sprite-base: url('/assets/cats/sprites/munchkin');
+  --fallback-color: #C4956A;
+}
+.cat-russian-blue {
+  --sprite-base: url('/assets/cats/sprites/russian-blue');
+  --fallback-color: #7A8FA6;
+}
+
 /* Development fallback: colored squares with cat ears when no sprites available */
 .protect-cat {
   background-color: var(--fallback-color, #888);

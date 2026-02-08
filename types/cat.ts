@@ -1,8 +1,19 @@
 /** 猫の一意識別子 */
 type CatId = string;
 
-/** 猫の種類（無料5種） */
-type CatBreed = 'tabby' | 'black' | 'white' | 'calico' | 'orange';
+/** 無料猫の種類（5種） */
+type FreeCatBreed = 'tabby' | 'black' | 'white' | 'calico' | 'orange';
+
+/** 有料猫の種類（5種） */
+type PremiumCatBreed =
+  | 'siamese'
+  | 'persian'
+  | 'scottish-fold'
+  | 'munchkin'
+  | 'russian-blue';
+
+/** 猫の種類（全10種） */
+type CatBreed = FreeCatBreed | PremiumCatBreed;
 
 /** 猫のFSM状態 */
 type CatState = 'idle' | 'walking' | 'sitting' | 'sleeping' | 'turning';
@@ -94,6 +105,8 @@ interface CatBreedConfig {
 
 export type {
   CatId,
+  FreeCatBreed,
+  PremiumCatBreed,
   CatBreed,
   CatState,
   CatSize,

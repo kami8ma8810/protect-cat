@@ -1,5 +1,5 @@
 import type { CatBreed, CatSize, CatInstance } from '@/types/cat';
-import { CAT_BREEDS, CAT_SIZE_CONFIGS } from './cat-types';
+import { CAT_SIZE_CONFIGS, getAvailableBreeds } from './cat-types';
 import { getRandomPosition } from './cat-movement';
 import { getStateDuration } from './cat-behavior';
 
@@ -16,11 +16,12 @@ function generateCatId(): string {
 
 /**
  * ランダムな猫の種類を選択する
+ * isPremiumがtrueなら有料猫も含む
  */
-function getRandomBreed(): CatBreed {
-  const freeBreeds = CAT_BREEDS.filter((b) => b.isFree);
-  const index = Math.floor(Math.random() * freeBreeds.length);
-  return freeBreeds[index]!.breed;
+function getRandomBreed(isPremium = false): CatBreed {
+  const breeds = getAvailableBreeds(isPremium);
+  const index = Math.floor(Math.random() * breeds.length);
+  return breeds[index]!.breed;
 }
 
 /**
@@ -50,7 +51,8 @@ function getRandomSize(): CatSize {
  */
 function createRandomCat(
   viewportWidth: number,
-  viewportHeight: number
+  viewportHeight: number,
+  isPremium = false
 ): CatInstance {
   const size = getRandomSize();
   const catPx = CAT_SIZE_CONFIGS[size].px;
@@ -58,7 +60,7 @@ function createRandomCat(
 
   return {
     id: generateCatId(),
-    breed: getRandomBreed(),
+    breed: getRandomBreed(isPremium),
     size,
     position: getRandomPosition(viewportWidth, viewportHeight, catPx),
     direction: Math.random() < 0.5 ? 'left' : 'right',

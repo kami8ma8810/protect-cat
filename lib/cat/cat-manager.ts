@@ -20,6 +20,7 @@ class CatManager {
   private animationFrameId: number | null = null;
   private saveTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private maxCats = 50;
+  private isPremium = false;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -31,6 +32,7 @@ class CatManager {
   async init(): Promise<void> {
     const settings = await loadSettings();
     this.maxCats = settings.maxCats;
+    this.isPremium = settings.isPremium;
 
     const persisted = await loadCats();
     for (const data of persisted) {
@@ -65,7 +67,7 @@ class CatManager {
 
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    const cat = createRandomCat(viewportWidth, viewportHeight);
+    const cat = createRandomCat(viewportWidth, viewportHeight, this.isPremium);
     cat.element = createCatElement(cat, this.container);
     this.cats.push(cat);
 
@@ -218,6 +220,13 @@ class CatManager {
    */
   updateMaxCats(max: number): void {
     this.maxCats = max;
+  }
+
+  /**
+   * Premium状態を更新する
+   */
+  updatePremium(isPremium: boolean): void {
+    this.isPremium = isPremium;
   }
 }
 

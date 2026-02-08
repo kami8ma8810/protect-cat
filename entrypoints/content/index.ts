@@ -51,7 +51,7 @@ export default defineContentScript({
     // スポーンタイマーを開始
     const spawnTimer = new SpawnTimer(
       () => catManager.spawnCat(),
-      settings.spawnIntervalMinutes
+      settings.spawnIntervalSeconds
     );
     spawnTimer.start();
 
@@ -69,8 +69,8 @@ export default defineContentScript({
           spawnTimer.start();
           catManager.init();
         }
-        if (message.settings?.spawnIntervalMinutes) {
-          spawnTimer.updateInterval(message.settings.spawnIntervalMinutes);
+        if (message.settings?.spawnIntervalSeconds) {
+          spawnTimer.updateInterval(message.settings.spawnIntervalSeconds);
         }
         if (message.settings?.maxCats) {
           catManager.updateMaxCats(message.settings.maxCats);

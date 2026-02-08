@@ -1,7 +1,13 @@
 import { loadSettings, updateSettings } from '@/lib/storage/settings-storage';
 import { getTodayCatCount } from '@/lib/storage/cat-storage';
 import { CAT_BREEDS } from '@/lib/cat/cat-types';
-import type { SpawnInterval, UserSettings } from '@/types/settings';
+import {
+  FREE_INTERVAL_PRESETS,
+  SPAWN_INTERVAL_RANGE,
+  PREMIUM_MAX_CATS,
+  FREE_MAX_CATS,
+} from '@/types/settings';
+import type { UserSettings } from '@/types/settings';
 
 /**
  * ポップアップアプリケーションクラス
@@ -26,11 +32,16 @@ class App {
   private render(): void {
     if (!this.settings) return;
 
+    const intervalSeconds = this.settings.spawnIntervalSeconds;
+    const isPremium = this.settings.isPremium;
+    const maxCats = isPremium ? PREMIUM_MAX_CATS : FREE_MAX_CATS;
+
     this.root.innerHTML = `
       <div class="popup">
         <header class="header">
           <div class="header-icon">🐱</div>
           <h1 class="header-title">Protect Cat</h1>
+          ${isPremium ? '<span class="premium-badge">Premium</span>' : ''}
         </header>
 
         <div class="stats-card">
@@ -52,11 +63,28 @@ class App {
 
         <div class="control-section">
           <span class="control-label">Spawn interval</span>
-          <div class="segment-control" id="interval-selector">
-            <button class="segment-btn ${this.settings.spawnIntervalMinutes === 1 ? 'active' : ''}" data-interval="1">1 min</button>
-            <button class="segment-btn ${this.settings.spawnIntervalMinutes === 2 ? 'active' : ''}" data-interval="2">2 min</button>
-            <button class="segment-btn ${this.settings.spawnIntervalMinutes === 5 ? 'active' : ''}" data-interval="5">5 min</button>
-          </div>
+          ${
+            isPremium
+              ? `
+            <div class="slider-row">
+              <input type="range" id="interval-slider" class="slider"
+                min="${SPAWN_INTERVAL_RANGE.min}" max="${SPAWN_INTERVAL_RANGE.max}"
+                value="${intervalSeconds}" step="10">
+              <span class="slider-value" id="interval-value">${this.formatInterval(intervalSeconds)}</span>
+            </div>
+          `
+              : `
+            <div class="segment-control" id="interval-selector">
+              ${FREE_INTERVAL_PRESETS.map(
+                (sec) => `
+                <button class="segment-btn ${intervalSeconds === sec ? 'active' : ''}" data-interval="${sec}">
+                  ${this.formatInterval(sec)}
+                </button>
+              `
+              ).join('')}
+            </div>
+          `
+          }
         </div>
 
         <div class="control-section">
@@ -64,8 +92,10 @@ class App {
           <div class="cat-grid">
             ${CAT_BREEDS.map(
               (breed) => `
-              <div class="cat-card ${breed.isFree ? '' : 'locked'}">
-                <div class="cat-thumbnail cat-thumb-${breed.breed}"></div>
+              <div class="cat-card ${!breed.isFree && !isPremium ? 'locked' : ''}">
+                <div class="cat-thumbnail cat-thumb-${breed.breed}">
+                  ${!breed.isFree && !isPremium ? '<span class="lock-icon">🔒</span>' : ''}
+                </div>
                 <span class="cat-name">${breed.displayNameJa}</span>
               </div>
             `
@@ -73,41 +103,81 @@ class App {
           </div>
         </div>
 
-        <button class="upgrade-btn" disabled>
-          More Cats Coming Soon
-        </button>
+        ${
+          !isPremium
+            ? `
+          <button class="upgrade-btn" id="upgrade-btn">
+            Upgrade to Premium
+          </button>
+        `
+            : `
+          <div class="premium-info">
+            Max cats: ${maxCats}
+          </div>
+        `
+        }
       </div>
     `;
   }
 
+  private formatInterval(seconds: number): string {
+    if (seconds < 60) return `${seconds}s`;
+    return `${Math.round(seconds / 60)} min`;
+  }
+
   private bindEvents(): void {
     // ON/OFF toggle
-    const toggle = this.root.querySelector('#toggle-enabled') as HTMLInputElement;
+    const toggle = this.root.querySelector(
+      '#toggle-enabled'
+    ) as HTMLInputElement;
     toggle?.addEventListener('change', async () => {
       await updateSettings({ enabled: toggle.checked });
-      chrome.runtime.sendMessage({
-        type: 'UPDATE_SETTINGS',
-        settings: { enabled: toggle.checked },
-      });
+      this.sendSettingsUpdate({ enabled: toggle.checked });
     });
 
-    // Interval selector
-    const intervalBtns = this.root.querySelectorAll('.segment-btn');
-    intervalBtns.forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        const interval = Number(
-          (btn as HTMLElement).dataset['interval']
-        ) as SpawnInterval;
-
-        intervalBtns.forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        await updateSettings({ spawnIntervalMinutes: interval });
-        chrome.runtime.sendMessage({
-          type: 'UPDATE_SETTINGS',
-          settings: { spawnIntervalMinutes: interval },
+    if (this.settings?.isPremium) {
+      // Premium: slider
+      const slider = this.root.querySelector(
+        '#interval-slider'
+      ) as HTMLInputElement;
+      const valueDisplay = this.root.querySelector('#interval-value');
+      slider?.addEventListener('input', () => {
+        const seconds = Number(slider.value);
+        if (valueDisplay) {
+          valueDisplay.textContent = this.formatInterval(seconds);
+        }
+      });
+      slider?.addEventListener('change', async () => {
+        const seconds = Number(slider.value);
+        await updateSettings({ spawnIntervalSeconds: seconds });
+        this.sendSettingsUpdate({ spawnIntervalSeconds: seconds });
+      });
+    } else {
+      // Free: segment buttons
+      const intervalBtns = this.root.querySelectorAll('.segment-btn');
+      intervalBtns.forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const seconds = Number((btn as HTMLElement).dataset['interval']);
+          intervalBtns.forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          await updateSettings({ spawnIntervalSeconds: seconds });
+          this.sendSettingsUpdate({ spawnIntervalSeconds: seconds });
         });
       });
+    }
+
+    // Upgrade button
+    const upgradeBtn = this.root.querySelector('#upgrade-btn');
+    upgradeBtn?.addEventListener('click', () => {
+      // Phase 2: ExtensionPay統合時にここを実装
+      // 今はPremiumフラグを直接切り替え（開発用）
+    });
+  }
+
+  private sendSettingsUpdate(settings: Partial<UserSettings>): void {
+    chrome.runtime.sendMessage({
+      type: 'UPDATE_SETTINGS',
+      settings,
     });
   }
 }

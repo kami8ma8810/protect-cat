@@ -22,12 +22,27 @@ describe('settings-storage', () => {
     it('保存された設定を返す', async () => {
       const customSettings: UserSettings = {
         enabled: false,
-        spawnIntervalMinutes: 5,
+        spawnIntervalSeconds: 300,
         maxCats: 30,
+        isPremium: false,
       };
       await chrome.storage.local.set({ settings: customSettings });
       const settings = await loadSettings();
       expect(settings).toEqual(customSettings);
+    });
+
+    it('Premium設定を正しく読み込む', async () => {
+      const premiumSettings: UserSettings = {
+        enabled: true,
+        spawnIntervalSeconds: 45,
+        maxCats: 100,
+        isPremium: true,
+      };
+      await chrome.storage.local.set({ settings: premiumSettings });
+      const settings = await loadSettings();
+      expect(settings.isPremium).toBe(true);
+      expect(settings.maxCats).toBe(100);
+      expect(settings.spawnIntervalSeconds).toBe(45);
     });
   });
 
@@ -35,8 +50,9 @@ describe('settings-storage', () => {
     it('設定を保存する', async () => {
       const settings: UserSettings = {
         enabled: false,
-        spawnIntervalMinutes: 1,
+        spawnIntervalSeconds: 60,
         maxCats: 20,
+        isPremium: false,
       };
       await saveSettings(settings);
       const result = await chrome.storage.local.get(['settings']);
@@ -50,17 +66,24 @@ describe('settings-storage', () => {
       await updateSettings({ enabled: false });
       const settings = await loadSettings();
       expect(settings.enabled).toBe(false);
-      expect(settings.spawnIntervalMinutes).toBe(
-        DEFAULT_SETTINGS.spawnIntervalMinutes
+      expect(settings.spawnIntervalSeconds).toBe(
+        DEFAULT_SETTINGS.spawnIntervalSeconds
       );
       expect(settings.maxCats).toBe(DEFAULT_SETTINGS.maxCats);
     });
 
     it('保存データがない状態でもデフォルトとマージする', async () => {
-      await updateSettings({ spawnIntervalMinutes: 5 });
+      await updateSettings({ spawnIntervalSeconds: 300 });
       const settings = await loadSettings();
-      expect(settings.spawnIntervalMinutes).toBe(5);
+      expect(settings.spawnIntervalSeconds).toBe(300);
       expect(settings.enabled).toBe(DEFAULT_SETTINGS.enabled);
+    });
+
+    it('isPremiumを更新できる', async () => {
+      await chrome.storage.local.set({ settings: DEFAULT_SETTINGS });
+      await updateSettings({ isPremium: true });
+      const settings = await loadSettings();
+      expect(settings.isPremium).toBe(true);
     });
   });
 });

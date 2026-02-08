@@ -1,15 +1,15 @@
 /**
  * 猫スポーン用タイマー
- * 指定間隔（分）でコールバックを実行する
+ * 指定間隔（秒）でコールバックを実行する
  */
 class SpawnTimer {
   private timerId: ReturnType<typeof setInterval> | null = null;
   private callback: () => void;
-  private intervalMinutes: number;
+  private intervalSeconds: number;
 
-  constructor(callback: () => void, intervalMinutes: number) {
+  constructor(callback: () => void, intervalSeconds: number) {
     this.callback = callback;
-    this.intervalMinutes = intervalMinutes;
+    this.intervalSeconds = intervalSeconds;
   }
 
   get isRunning(): boolean {
@@ -20,7 +20,7 @@ class SpawnTimer {
     if (this.timerId !== null) return;
     this.timerId = setInterval(
       this.callback,
-      this.intervalMinutes * 60_000
+      this.intervalSeconds * 1000
     );
   }
 
@@ -31,8 +31,8 @@ class SpawnTimer {
     }
   }
 
-  updateInterval(minutes: number): void {
-    this.intervalMinutes = minutes;
+  updateInterval(seconds: number): void {
+    this.intervalSeconds = seconds;
     if (this.isRunning) {
       this.stop();
       this.start();
