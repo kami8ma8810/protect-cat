@@ -235,19 +235,50 @@
   }
 }
 
-/* Breed sprite sheets */
+/* Breed sprite sheets - fallback colors for development without images */
 .cat-tabby {
   --sprite-base: url('/assets/cats/sprites/tabby');
+  --fallback-color: #8B6914;
 }
 .cat-black {
   --sprite-base: url('/assets/cats/sprites/black');
+  --fallback-color: #2C2C2C;
 }
 .cat-white {
   --sprite-base: url('/assets/cats/sprites/white');
+  --fallback-color: #F0F0F0;
 }
 .cat-calico {
   --sprite-base: url('/assets/cats/sprites/calico');
+  --fallback-color: #D4763A;
 }
 .cat-orange {
   --sprite-base: url('/assets/cats/sprites/orange');
+  --fallback-color: #E8972C;
+}
+
+/* Development fallback: colored squares with cat ears when no sprites available */
+.protect-cat {
+  background-color: var(--fallback-color, #888);
+  border-radius: 20% 20% 10% 10%;
+}
+
+/* Cat ears (CSS triangles) */
+.protect-cat::before,
+.protect-cat::after {
+  content: '';
+  position: absolute;
+  top: -30%;
+  width: 30%;
+  height: 40%;
+  background-color: inherit;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.protect-cat::before {
+  left: 10%;
+}
+
+.protect-cat::after {
+  right: 10%;
 }
